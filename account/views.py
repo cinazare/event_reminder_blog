@@ -30,7 +30,7 @@ class LogInApiView(APIView):
             return Response({'message': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
         token = JWTAuthentication.create_jwt(user)
-        response = HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/events/my')
+        response = HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/events/user')
         response.set_cookie(key='jwt_token', value=token, httponly=True)
         response.data = {
             'jwt_token': token

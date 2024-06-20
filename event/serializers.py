@@ -11,6 +11,7 @@ class EditEventSerializer(serializers.ModelSerializer):
         model = Events
         fields = (
             'id',
+            'provider',
             'course_name',
             'teacher_name',
             'number_of_sessions',
@@ -22,14 +23,7 @@ class EditEventSerializer(serializers.ModelSerializer):
         }
 
 
-class JoinEventsSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = Events
-        fields = (
-            'id',
-            'course_name',
-        )
 
 
 

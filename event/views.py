@@ -4,13 +4,12 @@ views for events
 from rest_framework.permissions import AllowAny
 from event.models import Events
 from rest_framework import viewsets
-from event.serializers import EditEventSerializer,  JoinEventsSerializer
+from event.serializers import EditEventSerializer
 from account.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import Response, APIView
-from rest_framework import status
+from rest_framework import status, generics
 from event.permissions import UpdateOwnObjects
-from django.http import HttpResponseRedirect
 
 
 class EventsViewSet(viewsets.ModelViewSet):
@@ -42,31 +41,43 @@ class EventsViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class ListAllEvents(viewsets.ModelViewSet):
-    """listing all events"""
-    serializer_class = JoinEventsSerializer
-    queryset = Events.objects.all()
-    permission_classes = [AllowAny, ]
+class ListAllEvents(viewsets.ViewSet):
+    """listing events"""
+    permission_classes = [AllowAny]
 
-    def list(self, request, *args, **kwargs):
-        """list all the events"""
-        queryset = self.filter_queryset(self.get_queryset())
+    def list(self, request):
+        """list"""
+        queryset = Events.objects.all()
+        serializer = EditEventSerializer(queryset, many=True)
+        return Response(serializer.data)
 
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        return Response(queryset.values())
-
-    def create(self, request, *args, **kwargs):
-        """creating event with user to be provider"""
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        course_name = serializer.data['course_name']
-        course_id = Events.objects.filter(course_name=course_name).first().id
-        return HttpResponseRedirect(redirect_to=f'http://127.0.0.1:8000/participant/joining/{course_id}')
-
-
-
-
+# class ListAllEvents(viewsets.ModelViewSet):
+#     """listing all events"""
+#     queryset = Events.objects.all()
+#
+#     permission_classes = [AllowAny]
+#
+#     def list(self, request, *args, **kwargs):
+#         """listing all events"""
+#         queryset = self.filter_queryset(self.get_queryset())
+#         return Response(queryset.values())
+#
+#     def create(self, request, *args, **kwargs):
+#         """this create"""
+#         return None
+#
+#     def update(self, request, *args, **kwargs):
+#         """update is not defined"""
+#         return None
+#
+#     def retrieve(self, request, *args, **kwargs):
+#         """retrieve is not defined """
+#         return None
+#
+#     def partial_update(self, request, *args, **kwargs):
+#         """partial update is not defined """
+#         return None
+#
+#     def destroy(self, request, *args, **kwargs):
+#         """destroy is not defined"""
+#         return None
