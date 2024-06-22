@@ -21,6 +21,7 @@ from account.views import LogInApiView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', LogInApiView.as_view()),
-    path('events/', include('event.urls'))
+    path('events/', include('event.urls')),
+    path('accounts/', include('account.urls'))
 
 ]

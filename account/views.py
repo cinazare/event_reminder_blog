@@ -9,6 +9,10 @@ from account.authentication import JWTAuthentication
 from account.serializers import UserLoginSerializer
 from rest_framework import permissions
 from django.http import HttpResponseRedirect
+from event.models import Events
+from rest_framework.permissions import AllowAny
+from event.serializers import EditEventSerializer, JoinOnAnEventSerializer
+from event.models import Participants
 
 
 class LogInApiView(APIView):
@@ -38,36 +42,46 @@ class LogInApiView(APIView):
 
         return response
 
-# class LogInApiView(APIView):
-#     """loging users with jwt"""
-#     serializer_class = UserLoginSerializer
-#
-#     def post(self, request):
-#         """do users authorization"""
-#         username = request.data['username']
-#         password = request.data['password']
-#
-#         user = User.objects.filter(username=username).first()
-#         if user is None:
-#             raise AuthenticationFailed('user not found')
-#
-#         if not user.check_password(password):
-#             raise AuthenticationFailed('incorrect password')
-#
-#         payload = {
-#             'id': user.id,
-#             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-#             'iat': datetime.datetime.utcnow()
-#         }
-#
-#         token = jwt.encode(payload, 'secret', algorithm='HS256')
-#
-#         response = Response()
-#         response.set_cookie(key='jwt', value=token, httponly=True)
-#         response.data = {
-#             'jwt': token
-#         }
-#         return response
+
+class ParticipantsJoin(APIView):
+    """participants joining on events"""
+    permission_classes = [AllowAny]
+    serializer_class = JoinOnAnEventSerializer
+
+    def get(self, request, pk):
+        """retrieving event with pk as id"""
+        if not pk:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        event = Events.objects.filter(id=pk).first()
+        serializer = EditEventSerializer(event)
+        return Response(serializer.data)
+
+    def post(self, request, pk):
+        """join on the selected event"""
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid()
+
+        event = Events.objects.filter(id=pk).first()
+        if not event:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if event.duplicate(serializer.data['phone_number']):
+            return Response({'message': 'y;ou have already installed'})
+
+        participant = Participants.objects.create(
+            phone_number=serializer.data['phone_number'],
+            full_name=serializer.data['full_name'],
+            student_number=serializer.data['student_number'],
+            event=event
+        )
+
+        return Response({"message": 'user created successfully'}, status=status.HTTP_201_CREATED)
+
+
+
+
+
 
 
 

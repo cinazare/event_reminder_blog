@@ -51,33 +51,5 @@ class ListAllEvents(viewsets.ViewSet):
         serializer = EditEventSerializer(queryset, many=True)
         return Response(serializer.data)
 
-# class ListAllEvents(viewsets.ModelViewSet):
-#     """listing all events"""
-#     queryset = Events.objects.all()
-#
-#     permission_classes = [AllowAny]
-#
-#     def list(self, request, *args, **kwargs):
-#         """listing all events"""
-#         queryset = self.filter_queryset(self.get_queryset())
-#         return Response(queryset.values())
-#
-#     def create(self, request, *args, **kwargs):
-#         """this create"""
-#         return None
-#
-#     def update(self, request, *args, **kwargs):
-#         """update is not defined"""
-#         return None
-#
-#     def retrieve(self, request, *args, **kwargs):
-#         """retrieve is not defined """
-#         return None
-#
-#     def partial_update(self, request, *args, **kwargs):
-#         """partial update is not defined """
-#         return None
-#
-#     def destroy(self, request, *args, **kwargs):
-#         """destroy is not defined"""
-#         return None
+
+
