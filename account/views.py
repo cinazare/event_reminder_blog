@@ -22,7 +22,6 @@ class LogInApiView(APIView):
 
     def post(self, request):
         """loging in user"""
-
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid()
 

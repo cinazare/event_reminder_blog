@@ -12,14 +12,11 @@ class TransactionsInline(admin.TabularInline):
     readonly_fields = ('date',)
     
 
-
-
 class UserAdmin(admin.ModelAdmin):
     """user admin page customization"""
-    fields = ('username', 'financial_credit')
+    fields = ('username',)
     # readonly_fields = ('financial_credit',)
     inlines = [TransactionsInline]
 
 
-
-admin.site.register(User, UserAdmin)
+admin.site.register(User, UserAdmin,)

@@ -35,8 +35,10 @@ class EventsViewSet(viewsets.ModelViewSet):
         """creating event with user to be provider"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         payload = {'provider': request.user}
         serializer.save(**payload)
+
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 

@@ -13,14 +13,14 @@ from django.contrib.auth.models import (
 class UserManager(BaseUserManager):
     """customized User manager."""
 
-    def create_user(self, username, password, **kwargs):
+    def create_user(self, username, password='123456', **kwargs):
         """create and save a normal user"""
         # print(email)
         # print(password)
         # print(kwargs)
         if not username:
             raise ValueError('user must have an email address')
-        user = self.model(email=self.username, **kwargs)
+        user = self.model(username=username, **kwargs)
         user.set_password(password)
         user.save(using=self._db)
 
@@ -45,14 +45,12 @@ class User(AbstractUser, PermissionsMixin):
     financial_credit = models.IntegerField(default=0)
     objects = UserManager()
 
-
     def __str__(self):
         """returns username as identification"""
         return str(self.username)
-    
 
     def get_credit(self):
-        """geting balance of all transactions"""
+        """getting balance of all transactions"""
         charge = self.transactions.filter(mode='+').aggregate(Sum('mount', default=0))
         cunsumptions = self.transactions.filter(mode='-').aggregate(Sum('mount', default=0))
         self.financial_credit = charge['mount__sum'] - cunsumptions['mount__sum']

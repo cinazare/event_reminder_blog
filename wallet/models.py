@@ -4,7 +4,6 @@ from account.models import User
 from django.contrib.auth.models import BaseUserManager
 
 
-
 class TransactionManager(models.Manager):
     """customizing transactions creations"""
 
@@ -17,8 +16,6 @@ class TransactionManager(models.Manager):
         return temp
 
 
-        
-
 class Transaction(models.Model):
     """registering all transactions for a wallet"""
     transaction_mode = (
@@ -28,8 +25,8 @@ class Transaction(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
     date = models.DateTimeField(auto_now=True)
-    mode = models.CharField(choices=transaction_mode, max_length=255)
-    mount = models.IntegerField(default=0)
+    mode = models.CharField(choices=transaction_mode, max_length=255, default='+')
+    mount = models.PositiveIntegerField(default=0)
     objects = TransactionManager()
 
     def __str__(self):

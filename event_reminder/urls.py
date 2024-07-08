@@ -23,6 +23,6 @@ urlpatterns = [
     path('login/', LogInApiView.as_view()),
     path('events/', include('event.urls')),
     path('accounts/', include('account.urls')),
-    # path('wallets/', include('wallet.urls'))
+    path('wallets/', include('wallet.urls'))
 
 ]
