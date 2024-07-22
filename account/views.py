@@ -68,7 +68,7 @@ class ParticipantsJoin(APIView):
         if event.duplicate(serializer.data['phone_number']):
             return Response({'message': 'y;ou have already installed'})
 
-        participant = Participants.objects.create(
+        Participants.objects.create(
             phone_number=serializer.data['phone_number'],
             full_name=serializer.data['full_name'],
             student_number=serializer.data['student_number'],

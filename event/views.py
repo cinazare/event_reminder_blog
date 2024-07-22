@@ -2,14 +2,15 @@
 views for events
 """
 from rest_framework.permissions import AllowAny
-from event.models import Events
+from event.models import Events, Participants
 from rest_framework import viewsets
 from event.serializers import EditEventSerializer
 from account.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import Response, APIView
-from rest_framework import status, generics
+from rest_framework.views import Response
+from rest_framework import status
 from event.permissions import UpdateOwnObjects
+from event.serializers import EventParticipantsSerializer
 
 
 class EventsViewSet(viewsets.ModelViewSet):
@@ -52,6 +53,27 @@ class ListAllEvents(viewsets.ViewSet):
         queryset = Events.objects.all()
         serializer = EditEventSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class EventParticipantsViewSet(viewsets.ModelViewSet):
+    """functionality on every event users"""
+    queryset = Participants.objects.all()
+    serializer_class = EventParticipantsSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request, *args, **kwargs):
+        """list all participants for event"""
+
+    def retrieve(self, request, pk=None, *args, **kwargs):
+        """retrieve special participant"""
+
+    def destroy(self, request, pk=None, *args, **kwargs):
+        """deleting special participant"""
+
+    def put(self, request, pk=None, *args, **kwargs):
+        """updating special field of user"""
+
 
 
 

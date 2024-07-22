@@ -43,9 +43,13 @@ class JoinOnAnEventSerializer(serializers.ModelSerializer):
         }
 
 
-
-
-
-
-
-
+class EventParticipantsSerializer(serializers.ModelSerializer):
+    """serializing participants for teir admin"""
+    class Meta:
+        model = Participants
+        fields = (
+            'id',
+            'phone_number',
+            'full_name',
+            'student_number'
+        )
