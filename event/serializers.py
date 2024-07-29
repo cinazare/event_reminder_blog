@@ -21,7 +21,7 @@ class EditEventSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {
             'id': {'read_only': True},
-            'provider':{'read_only': True}
+            'provider': {'read_only': True}
         }
 
 
@@ -51,5 +51,11 @@ class EventParticipantsSerializer(serializers.ModelSerializer):
             'id',
             'phone_number',
             'full_name',
-            'student_number'
+            'student_number',
+            'event'
         )
+        extra_kwargs = {
+            'event': {'read_only': True}
+        }
+
+
