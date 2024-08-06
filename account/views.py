@@ -2,44 +2,96 @@
 views for the accounts
  """
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, exceptions
 from account.models import User
 from rest_framework.response import Response
-from account.authentication import JWTAuthentication
-from account.serializers import UserLoginSerializer
-from rest_framework import permissions
-from django.http import HttpResponseRedirect
-from event.models import Events
 from rest_framework.permissions import AllowAny
 from event.serializers import EditEventSerializer, JoinOnAnEventSerializer
-from event.models import Participants
+from event.models import Participants, Events
+from .serializers import UserLoginSerializer, UserRefreshTokenSerializer
+from .authentication import JWTAuthentication
 
 
-class LogInApiView(APIView):
-    """loging users with jwt"""
+
+class LoginApiView(APIView):
+    """login api view"""
+    permission_classes = [AllowAny]
     serializer_class = UserLoginSerializer
-    permission_classes = [permissions.AllowAny,]
 
-    def post(self, request):
-        """loging in user"""
-        serializer = self.serializer_class(data=request.data)
+    def post(self, request, *args, **kwargs):
+        serializer = UserLoginSerializer(data=request.data)
         serializer.is_valid()
 
         username = serializer.data['username']
         password = serializer.data['password']
 
+        print(username)
+        print(password)
+        
         user = User.objects.filter(username=username).first()
-        if user is None or not user.check_password(password):
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+        print(user)
+        if not user:
+            return Response({'message':'username doesnt exist'})
+        
+        if not user.check_password(password):
+            return Response({'message':'password is wrong'})
+        
+        
+        refresh = JWTAuthentication.create_refresh(user.id)
+        access = JWTAuthentication.create_access(refresh)
 
-        token = JWTAuthentication.create_jwt(user)
-        response = HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/events/user')
-        response.set_cookie(key='jwt_token', value=token, httponly=True)
-        response.data = {
-            'jwt_token': token
-        }
+        return Response(
+            {
+                'message': 'successful authentication',
+                'access': access,
+                'refresh': refresh
+                }
+            )
 
-        return response
+
+
+class RefreshAPIView(APIView):
+    """getting refresh and build access"""
+    serializer_class = UserRefreshTokenSerializer
+    permission_classes = [AllowAny, ]
+
+
+    def post(self, request, *args, **kwargs):
+        serializer = UserRefreshTokenSerializer(data=request.data)
+        serializer.is_valid()
+        
+        access = JWTAuthentication.create_access(serializer.data['refresh'])
+
+        return Response({'access': access, 'refresh': serializer.data['refresh']})
+    
+
+
+
+# class LogInApiView(APIView):
+#     """loging users with jwt"""
+#     serializer_class = UserLoginSerializer
+#     permission_classes = [permissions.AllowAny,]
+#
+#     def post(self, request):
+#         """loging in user"""
+#         serializer = self.serializer_class(data=request.data)
+#         serializer.is_valid()
+#
+#         username = serializer.data['username']
+#         password = serializer.data['password']
+#
+#         user = User.objects.filter(username=username).first()
+#         if user is None or not user.check_password(password):
+#             return Response({'message': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         token = JWTAuthentication.create_jwt(user)
+#         response = HttpResponseRedirect(redirect_to='http://127.0.0.1:8000/events/user')
+#         response.set_cookie(key='jwt_token', value=token, httponly=True)
+#         response.data = {
+#             'jwt_token': token
+#         }
+#
+#         return response
 
 
 class ParticipantsJoin(APIView):

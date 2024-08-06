@@ -52,7 +52,7 @@ class ListAllEvents(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         """listing all users events"""
-        queryset = self.filter_queryset(self.get_queryset()).filter(provider=request.user.id)
+        queryset = self.filter_queryset(self.get_queryset())
 
         page = self.paginate_queryset(queryset)
         if page is not None:

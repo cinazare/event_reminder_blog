@@ -16,3 +16,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
         #         'write_only': True,
         #     }
         # }
+
+class UserRefreshTokenSerializer(serializers.Serializer):
+    """serializing a refresh token"""
+    refresh = serializers.CharField(max_length=255)
