@@ -2,7 +2,7 @@
 views for the accounts
  """
 from rest_framework.views import APIView
-from rest_framework import status, exceptions
+from rest_framework import status
 from account.models import User
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -25,16 +25,13 @@ class LoginApiView(APIView):
         username = serializer.data['username']
         password = serializer.data['password']
 
-        print(username)
-        print(password)
         
         user = User.objects.filter(username=username).first()
-        print(user)
         if not user:
-            return Response({'message':'username doesnt exist'})
+            return Response({'message':'username doesnt exist'}, status=status.HTTP_401_UNAUTHORIZED)
         
         if not user.check_password(password):
-            return Response({'message':'password is wrong'})
+            return Response({'message':'password is wrong'}, status=status.HTTP_401_UNAUTHORIZED)
         
         
         refresh = JWTAuthentication.create_refresh(user.id)
@@ -42,10 +39,11 @@ class LoginApiView(APIView):
 
         return Response(
             {
-                'message': 'successful authentication',
-                'access': access,
-                'refresh': refresh
-                }
+            'message': 'successful authentication',
+            'access': access,
+            'refresh': refresh
+            },
+            status=status.HTTP_200_OK
             )
 
 

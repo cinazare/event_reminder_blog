@@ -10,6 +10,8 @@ from rest_framework.exceptions import AuthenticationFailed, ParseError
 User = get_user_model()
 
 
+ALGORITHM = 'HS256'
+
 class JWTAuthentication(authentication.BaseAuthentication):
     """authentication class with jwt"""
 
@@ -22,7 +24,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
         jwt_token = jwt_token.split()[1]
 
         try:
-            payload = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=['HS256'])
+            payload = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms='HS256')
         except jwt.exceptions.InvalidSignatureError:
             raise AuthenticationFailed('invalid signature')
         except:
@@ -49,7 +51,7 @@ class JWTAuthentication(authentication.BaseAuthentication):
         """create access token with refresh token"""
         
         try:
-            payload = jwt.decode(refresh, settings.SECRET_KEY, algorithms=['HS256'])
+            payload = jwt.decode(refresh, settings.SECRET_KEY, algorithms='HS256')
         except jwt.exceptions.InvalidSignatureError:
             raise AuthenticationFailed('invalid signature')
         except:

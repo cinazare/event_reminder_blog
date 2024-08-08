@@ -13,7 +13,7 @@ from django.contrib.auth.models import (
 class UserManager(BaseUserManager):
     """customized User manager."""
 
-    def create_user(self, username, password='123456', **kwargs):
+    def create_user(self, username, password=None, **kwargs):
         """create and save a normal user"""
         # print(email)
         # print(password)
@@ -21,6 +21,10 @@ class UserManager(BaseUserManager):
         if not username:
             raise ValueError('user must have an email address')
         user = self.model(username=username, **kwargs)
+        
+        if password is None:
+            password = '123456'
+        
         user.set_password(password)
         user.save(using=self._db)
 
