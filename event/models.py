@@ -13,7 +13,7 @@ class Events(models.Model):
     teacher_name = models.CharField(max_length=255)
     description = models.TextField(max_length=255, blank=True)
     number_of_sessions = models.SmallIntegerField()
-    date_of_holding = models.DateTimeField()
+    date_of_holding = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         """retrieving course_name and provider_name"""

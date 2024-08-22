@@ -44,7 +44,7 @@ class LoginApiView(APIView):
             'refresh': refresh
             },
             status=status.HTTP_200_OK
-            )
+        )
 
 
 
@@ -60,7 +60,7 @@ class RefreshAPIView(APIView):
         
         access = JWTAuthentication.create_access(serializer.data['refresh'])
 
-        return Response({'access': access, 'refresh': serializer.data['refresh']})
+        return Response({'access': access, 'refresh': serializer.data['refresh']}, status=status.HTTP_200_OK)
     
 
 
@@ -104,7 +104,8 @@ class ParticipantsJoin(APIView):
 
         event = Events.objects.filter(id=pk).first()
         serializer = EditEventSerializer(event)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
     def post(self, request, pk):
         """join on the selected event"""
@@ -115,17 +116,17 @@ class ParticipantsJoin(APIView):
         if not event:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        if event.duplicate(serializer.data['phone_number']):
+        if event.duplicate(request.data['phone_number']):
             return Response({'message': 'y;ou have already installed'})
 
-        Participants.objects.create(
-            phone_number=serializer.data['phone_number'],
-            full_name=serializer.data['full_name'],
-            student_number=serializer.data['student_number'],
-            event=event
-        )
-
-        return Response({"message": 'user created successfully'}, status=status.HTTP_201_CREATED)
+        payload = {
+            'event': event
+        }
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(**payload)
+    
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 
